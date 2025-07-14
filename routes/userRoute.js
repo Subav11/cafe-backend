@@ -10,14 +10,19 @@ import {
   showUsers,
   updateProfile,
   getUser,
+  addUser,
 } from "../controllers/userController.js";
+
+//user routes
 Router.post("/register", register);
 Router.post("/login", login);
-Router.get("/showusers", authenticate, authorize("admin"), showUsers);
-Router.get("/:id", authenticate, authorize("admin"), getUser);
-Router.patch("/:id", authenticate, authorize("admin"), updateUser);
-Router.delete("/:id", authenticate, authorize("admin"), deleteUser);
 Router.get("/:id/profile", authenticate, profile);
 Router.patch("/:id/profile", authenticate, updateProfile);
 
+//admin routes
+Router.get("/showUsers", showUsers);
+Router.post("/addUser", addUser);
+Router.get("/:id", authenticate, authorize("admin"), getUser);
+Router.patch("/:id", authenticate, authorize("admin"), updateUser);
+Router.delete("/:id", deleteUser);
 export default Router;

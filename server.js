@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import userRouter from "./routes/userRoute.js";
+import productRouter from "./routes/productRoute.js"
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -28,3 +29,4 @@ mongoose.connect(`mongodb://localhost:27017/merncafe`).then(() => {
 //     });
 //   });
 app.use("/api/users", userRouter);
+app.use("/api/products", productRouter);

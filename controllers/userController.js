@@ -33,13 +33,37 @@ const updateUser = async (req, res) => {
     res.status(400).json({ message: "Something went wrong" });
   }
 };
+
+// const showUsers = async (req, res) => {
+//   try {
+//     const {page=1, limit=3} = req.query
+//     const result = await userModel.find().skip(page-1).limit(limit);
+//     res.status(200).json(result);
+//   } catch (err) {
+//     console.log(err);
+//     res.status(400).json({ message: "Something went wrong" });
+//   }
+// };
+
 const showUsers = async (req, res) => {
   try {
-    const result = await userModel.find();
-    res.status(200).json(result);
+    const { page = 1, limit = 3, search = "" } = req.query;
+    //100 documents, skip (page = 2 which is 1 * limit = 10 then it will skip first 10 doc and show next 10)
+    const skip = (page - 1) * limit;
+    const count = await userModel.countDocuments({
+      firstName: { $regex: search, $options: "i" },
+    });
+    //if 10(total docs)/ limit(3) then it will show 3 pages but actually it is 4 so used ceil
+    const total = Math.ceil(count / limit);
+    const users = await userModel
+      .find({ firstName: { $regex: search, $options: "i" } })
+      .skip(skip)
+      .limit(limit)
+      .sort({ updatedAt: -1 });
+    res.status(200).json({ users, total });
   } catch (err) {
     console.log(err);
-    res.status(400).json({ message: "Something went wrong" });
+    res.status(500).json({ message: "Something went wrong" });
   }
 };
 
@@ -81,6 +105,20 @@ const login = async (req, res) => {
     res.status(500).json({ message: "Something went wrong" });
   }
 };
+
+const addUser = async (req, res) => {
+  try {
+    const body = req.body;
+    const hashedpwd = await bcrypt.hash(body.password, 10);
+    body.password = hashedpwd;
+    const result = await userModel.create(body);
+    res.status(200).json(result);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
 const register = async (req, res) => {
   try {
     const { firstName, lastName, email, password } = req.body;
@@ -117,6 +155,7 @@ const updateProfile = async (req, res) => {
     res.status(400).json({ message: "Something went wrong" });
   }
 };
+
 export {
   register,
   login,
@@ -126,4 +165,5 @@ export {
   updateUser,
   profile,
   updateProfile,
+  addUser,
 };
