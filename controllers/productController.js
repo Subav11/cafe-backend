@@ -31,6 +31,17 @@ const showProducts = async (req, res) => {
   }
 };
 
+const getProduct = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const result = await productModel.findOne({ _id: id });
+    res.status(200).json(result);
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ message: "Something went wrong" });
+  }
+};
+
 const updateProduct = async (req, res) => {
   try {
     const id = req.params.id;
@@ -55,4 +66,19 @@ const deleteProduct = async (req, res) => {
   }
 };
 
-export { addProduct, showProducts, updateProduct, deleteProduct };
+const displayProducts = async (req, res) => {
+  try {
+    const { page = 1, limit = 6 } = req.query;
+    const skip = (page - 1) * limit;
+    const count = await productModel.countDocuments();
+    const total = Math.ceil(count/limit);
+    const products = await productModel.find().skip(skip).limit(limit);
+    res.status(200).json({products, total});
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+
+export { addProduct, showProducts, displayProducts, getProduct,updateProduct, deleteProduct };
