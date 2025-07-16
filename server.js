@@ -1,15 +1,14 @@
 import express from "express";
 import mongoose from "mongoose";
-import cors from "cors";
 import dotenv from "dotenv";
 import userRouter from "./routes/userRoute.js";
-import productRouter from "./routes/productRoute.js"
-const app = express();
-app.use(express.json());
-app.use(cors());
-
+import productRouter from "./routes/productRoute.js";
+import orderRouter from "./routes/orderRoute.js"
+import cors from "cors";
 dotenv.config();
-
+const app = express();
+app.use(cors());
+app.use(express.json());
 const dbuser = encodeURIComponent(process.env.DBUSER);
 const dbpass = encodeURIComponent(process.env.DBPASS);
 
@@ -21,12 +20,15 @@ mongoose.connect(`mongodb://localhost:27017/merncafe`).then(() => {
 
 // mongoose
 //   .connect(
-//     `mongodb+srv://${dbuser}:${dbpass}@cluster0.ts55vzb.mongodb.net/merncafe?retryWrites=true&w=majority&appName=Cluster0`
+//     `mongodb+srv://${dbuser}:${dbpass}@cluster0.qjxhv.mongodb.net/merncafe?retryWrites=true&w=majority&appName=Cluster0`
 //   )
 //   .then(() => {
 //     app.listen(8081, () => {
 //       console.log("Server started");
 //     });
 //   });
+
 app.use("/api/users", userRouter);
 app.use("/api/products", productRouter);
+app.use("/api/orders", orderRouter)
+//hello World

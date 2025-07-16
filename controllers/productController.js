@@ -11,20 +11,23 @@ const addProduct = async (req, res) => {
   }
 };
 
-const showProducts = async (req, res) => {
+const deleteProduct = async (req, res) => {
   try {
-    const { page = 1, limit = 3, search = "" } = req.query;
-    const skip = (page - 1) * limit;
-    const count = await productModel.countDocuments({
-      productName: { $regex: search, $options: "i" },
-    });
-    const total = Math.ceil(count / limit);
-    const products = await productModel
-      .find({ productName: { $regex: search, $options: "i" } })
-      .skip(skip)
-      .limit(limit)
-      .sort({ updatedAt: -1 });
-    res.status(201).json({ products, total });
+    const id = req.params.id;
+    const result = await productModel.findByIdAndDelete(id);
+    res.status(200).json(result);
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ message: "Something went wrong" });
+  }
+};
+
+const updateProduct = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const body = req.body;
+    const result = await productModel.findByIdAndUpdate(id, body);
+    res.status(200).json(result);
   } catch (err) {
     console.log(err);
     res.status(400).json({ message: "Something went wrong" });
@@ -42,27 +45,23 @@ const getProduct = async (req, res) => {
   }
 };
 
-const updateProduct = async (req, res) => {
+const showProducts = async (req, res) => {
   try {
-    const id = req.params.id;
-    const body = req.body;
-    const result = await productModel.findByIdAndUpdate(id, body);
-    res.status(200).json(result);
+    const { page = 1, limit = 3, search = "" } = req.query;
+    const skip = (page - 1) * limit;
+    const count = await productModel.countDocuments({
+      productName: { $regex: search, $options: "i" },
+    });
+    const total = Math.ceil(count / limit);
+    const products = await productModel
+      .find({ productName: { $regex: search, $options: "i" } })
+      .skip(skip)
+      .limit(limit)
+      .sort({ updatedAt: -1 });
+    res.status(200).json({ products, total });
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Something went wrong" });
-  }
-};
-
-const deleteProduct = async (req, res) => {
-  try{
-  const id = req.params.id;
-  const result = await productModel.findByIdAndDelete(id);
-  res.status(200).json(result);
-  }
-  catch(err){
-    console.log(err)
-    res.status(400).json({ message: "Something went wrong" });
   }
 };
 
@@ -80,5 +79,4 @@ const displayProducts = async (req, res) => {
   }
 };
 
-
-export { addProduct, showProducts, displayProducts, getProduct,updateProduct, deleteProduct };
+export { addProduct, deleteProduct, updateProduct, getProduct, showProducts,displayProducts };

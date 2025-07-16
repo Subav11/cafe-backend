@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-const SECRET = "sometext";
+const SECRET = "something";
 
 const authenticate = (req, res, next) => {
   try {
